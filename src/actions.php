@@ -7,6 +7,9 @@ function update_post($id, \WP_Post $post, $update) {
     if (wp_is_post_revision($id) || wp_is_post_autosave($id)) {
         return $post;
     }
+    if (!has_api_key()) {
+        return $post;
+    }
 
     $client = create_client();
 
