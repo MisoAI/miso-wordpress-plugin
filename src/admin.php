@@ -1,6 +1,6 @@
 <?php
 
-namespace Miso;
+namespace Miso\Admin;
 
 use Miso\Operations;
 
@@ -25,7 +25,7 @@ function admin_menu() {
     );
     add_settings_field(
         'api_key',
-        'API Key',
+        'Secret API Key',
         function () {
             $options = get_option('miso_settings', []);
             $api_key = array_key_exists('api_key', $options) ? $options['api_key'] : '';
@@ -42,13 +42,40 @@ function admin_menu() {
         __NAMESPACE__ . '\admin_page',
         //'dashicons-admin-site'
     );
+    add_submenu_page(
+        'miso',
+        'Posts',
+        'Posts',
+        'manage_options',
+        'miso&view=posts',
+        __NAMESPACE__ . '\posts_page',
+    );
+    // change submenu name inside the second layer of menu items
+    if (!empty( $GLOBALS['submenu']['miso'])) {
+        $GLOBALS['submenu']['miso'][0][0] = esc_attr__('Settings', 'miso');
+    }
 }
 
 function admin_page() {
-    $recent_tasks = Operations::recent_tasks();
+    $view = get_request_var('view');
+    switch ($view) {
+        case 'posts':
+            posts_page();
+            break;
+        default:
+            settings_page();
+    }
+}
+
+function get_request_var($name) {
+    return isset($_REQUEST[$name]) ? $_REQUEST[$name] : null;
+}
+
+function settings_page() {
     ?>
     <div class="wrap">
         <h1>Settings</h1>
+        <p>An API key is required for Miso data integration. You can get your secret API key from <a href="https://dojo.askmiso.com/" target="_blank">Miso dashboard</a>.</p>
         <form method="post" action="options.php">
             <?php
                 settings_fields('miso');
@@ -56,15 +83,24 @@ function admin_page() {
                 submit_button();
             ?>
         </form>
-        <h1>Operations</h1>
+    </div>
+    <?php
+}
+
+function posts_page() {
+    $recent_tasks = Operations::recent_tasks();
+    ?>
+    <div class="wrap">
+        <h1>Posts</h1>
+        <p>Upload all posts to Miso catalog and delete extra records from Miso catalog.</p>
         <form name="sync-posts">
             <div>
-                <?php submit_button('Sync posts', 'primary'); ?>
+                <?php submit_button('Sync data', 'primary'); ?>
             </div>
             <input type="hidden" name="action" value="miso_send_form">
             <input type="hidden" name="operation" value="sync-posts">
         </form>
-        <h2>Recent tasks</h2>
+        <h1>Recent sync tasks</h1>
         <table id="recent-tasks" class="widefat fixed" cellspacing="0">
             <thead>
                 <th class="manage-column column-columnname" scope="col">Status</th>
