@@ -10,7 +10,7 @@ Miso.ai is a LLM API service that answers questions accurately solely based on y
 
 ## Instructions
 
-Set up your data integration in the following steps:
+Given that you have already registered a Miso account, you can set up your data integration in the following steps:
 
 1. Install and activate this plugin.
 2. Go to the Miso AI > Settings menu page in your WordPress admin panel.
