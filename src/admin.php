@@ -54,6 +54,15 @@ function admin_menu() {
     if (!empty( $GLOBALS['submenu']['miso'])) {
         $GLOBALS['submenu']['miso'][0][0] = esc_attr__('Settings', 'miso');
     }
+    // fix the highlight of the submenu item
+    add_filter('submenu_file', __NAMESPACE__ . '\submenu_file', 10, 2);
+}
+
+function submenu_file($submenu_file, $parent_file) {
+    if (!isset($_GET['page']) || $_GET['page'] !== 'miso' || !isset($_GET['view'])) {
+        return $submenu_file;
+    }
+    return 'miso&view=' . $_GET['view'];
 }
 
 function admin_page() {
