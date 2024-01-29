@@ -21,11 +21,9 @@ class WP_CLI_MisoCommand {
         } finally {
             remove_action('miso_task_progress', __NAMESPACE__ . '\wp_cli_log');
         }
-
     }
 
     public function debug($args, $assoc_args) {
-
         $id = $assoc_args['id'];
         $type = $assoc_args['type'];
         $query = $id ?

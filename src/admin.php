@@ -88,14 +88,18 @@ function settings_page() {
 }
 
 function posts_page() {
+    $has_api_key = \Miso\has_api_key();
     $recent_tasks = Operations::recent_tasks();
     ?>
     <div class="wrap">
         <h1>Posts</h1>
         <p>Upload all posts to Miso catalog and delete extra records from Miso catalog.</p>
+        <?php if (!$has_api_key): ?>
+            <p><strong>API key is required to perform operations.</strong></p>
+        <?php endif; ?>
         <form name="sync-posts">
             <div>
-                <?php submit_button('Sync data', 'primary'); ?>
+                <?php submit_button('Sync data', 'primary', 'submit', \true, $has_api_key ? [] : ['disabled' => '']); ?>
             </div>
             <input type="hidden" name="action" value="miso_send_form">
             <input type="hidden" name="operation" value="sync-posts">
