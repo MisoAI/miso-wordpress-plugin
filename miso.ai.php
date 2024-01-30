@@ -28,7 +28,7 @@ require_once __DIR__ . '/src/actions.php';
 require_once __DIR__ . '/src/wp-cli.php';
 
 // adds admin pages
-require_once __DIR__ . '/src/admin.php';
+require_once __DIR__ . '/src/admin/index.php';
 
 register_activation_hook(__FILE__, function() {
     Miso\DataBase::install();

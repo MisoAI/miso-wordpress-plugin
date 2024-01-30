@@ -5,6 +5,11 @@ namespace Miso\Admin;
 use Miso\Operations;
 
 function admin_menu() {
+    // resources
+    wp_register_script('miso-posts', plugins_url('../../js/posts.js', __FILE__));
+    wp_register_style('miso-admin', plugins_url('../../css/admin.css', __FILE__));
+    wp_enqueue_style('miso-admin');
+    // settings
     register_setting(
         'miso',
         'miso_settings',
@@ -34,6 +39,7 @@ function admin_menu() {
         'miso',
         'miso_settings',
     );
+    // menu pages
     add_menu_page(
         'Miso AI',
         'Miso AI',
@@ -58,26 +64,29 @@ function admin_menu() {
     add_filter('submenu_file', __NAMESPACE__ . '\submenu_file', 10, 2);
 }
 
+function get_request_var($name) {
+    return isset($_REQUEST[$name]) ? $_REQUEST[$name] : null;
+}
+
 function submenu_file($submenu_file, $parent_file) {
-    if (!isset($_GET['page']) || $_GET['page'] !== 'miso' || !isset($_GET['view'])) {
+    $page = get_request_var('page');
+    $view = get_request_var('view');
+    if ($page !== 'miso' || !$view) {
         return $submenu_file;
     }
-    return 'miso&view=' . $_GET['view'];
+    return 'miso&view=' . $view;
 }
 
 function admin_page() {
     $view = get_request_var('view');
     switch ($view) {
         case 'posts':
+            wp_enqueue_script('miso-posts');
             posts_page();
             break;
         default:
             settings_page();
     }
-}
-
-function get_request_var($name) {
-    return isset($_REQUEST[$name]) ? $_REQUEST[$name] : null;
 }
 
 function settings_page() {
@@ -100,6 +109,10 @@ function posts_page() {
     $has_api_key = \Miso\has_api_key();
     $recent_tasks = Operations::recent_tasks();
     ?>
+    <script>
+        window.ajax_url = '<?php echo admin_url( "admin-ajax.php" ); ?>';
+        window.ajax_nonce = '<?php echo wp_create_nonce( "secure_nonce_name" ); ?>';
+    </script>
     <div class="wrap">
         <h1>Posts</h1>
         <p>Upload all posts to Miso catalog and delete extra records from Miso catalog.</p>
@@ -114,7 +127,7 @@ function posts_page() {
             <input type="hidden" name="operation" value="sync-posts">
         </form>
         <h1>Recent sync tasks</h1>
-        <table id="recent-tasks" class="widefat fixed" cellspacing="0">
+        <table id="recent-tasks" class="widefat fixed striped" cellspacing="0">
             <thead>
                 <th class="manage-column column-columnname" scope="col">Status</th>
                 <th class="manage-column column-columnname" scope="col">Uploaded</th>
@@ -140,55 +153,6 @@ function posts_page() {
             </tbody>
         </table>
     </div>
-    <script>
-        const ajax_url = '<?php echo admin_url( "admin-ajax.php" ); ?>';
-        const ajax_nonce = '<?php echo wp_create_nonce( "secure_nonce_name" ); ?>';
-        function updateProgress({ miso_recent_tasks }) {
-            for (const task of miso_recent_tasks) {
-                const { uploaded = 0, total = 0, deleted = 0 } = task.data || {};
-                const $tr = jQuery('#recent-tasks tr[data-task-id="' + task.id + '"]');
-                if ($tr.length === 0) {
-                    jQuery('#recent-tasks tbody').prepend(`<tr data-task-id="${task.id}"><td class="column-columnname">${task.status}</td><td class="column-columnname">${uploaded} / ${total}</td><td class="column-columnname">${deleted}</td><td class="column-columnname">${task.created_at}</td><td class="column-columnname">${task.modified_at}</td></tr>`);
-                } else {
-                    $tr.find('td:nth-child(1)').text(task.status);
-                    $tr.find('td:nth-child(2)').text(`${uploaded}/${total}`);
-                    $tr.find('td:nth-child(3)').text(deleted);
-                    $tr.find('td:nth-child(4)').text(task.created_at);
-                    $tr.find('td:nth-child(5)').text(task.modified_at);
-                }
-            }
-        }
-        jQuery(document).ready(($) => {
-            $('[name="sync-posts"]').on('submit', (event) => {
-                event.preventDefault();
-                const $form = $(event.target);
-                const $button = $form.find('input[type="submit"]');
-                const formData = $form.serializeArray();
-                formData.push({ name: '_nonce', value: ajax_nonce });
-                $button.prop('disabled', true);
-                $.ajax({
-                    url: ajax_url,
-                    method: 'POST',
-                    data: formData,
-                    success: (response) => {
-                        $button.prop('disabled', false);
-                        wp.heartbeat.connectNow();
-                        const intervalId = setInterval(() => wp.heartbeat.connectNow(), 10000);
-                        setTimeout(() => clearInterval(intervalId), 120000);
-                    },
-                    error: (response) => {
-                        $button.prop('disabled', false);
-                        const data = response.responseJSON.data;
-                        console.error(data);
-                        alert('[Failed] ' + data);
-                    },
-                });
-            });
-            $(document).on('heartbeat-tick', (event, data) => {
-                updateProgress(data);
-            });
-        });
-    </script>
     <?php
 }
 

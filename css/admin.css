@@ -1,0 +1,15 @@
+@font-face {
+  font-family: 'MisoIcon';
+  src: url('../font/MisoIcon.eot');
+  src: url('../font/MisoIcon.eot?#iefix') format('embedded-opentype'),
+       url('../font/MisoIcon.woff') format('woff'),
+       url('../font/MisoIcon.ttf') format('truetype'),
+       url('../font/MisoIcon.svg#MisoIcon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+#toplevel_page_miso .wp-menu-image::before {
+  font-family: 'MisoIcon';
+  content: '\0041';
+  transform: scale(0.75);
+}
