@@ -15,7 +15,7 @@ class WP_CLI_MisoCommand {
     public function sync($args, $assoc_args) {
         add_action('miso_task_progress', __NAMESPACE__ . '\wp_cli_log');
         try {
-            Operations::sync_posts([]);
+            Operations::sync_posts('wp-cli', []);
         } catch (\Exception $e) {
             \WP_CLI::error($e->getMessage());
         } finally {

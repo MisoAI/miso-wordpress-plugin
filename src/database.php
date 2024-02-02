@@ -64,6 +64,8 @@ class DataBase {
                 id int NOT NULL AUTO_INCREMENT,
                 type varchar(255) NOT NULL,
                 status varchar(255) NOT NULL,
+                created_via varchar(255) NOT NULL,
+                created_by int,
                 created_at timestamp DEFAULT CURRENT_TIMESTAMP,
                 modified_at timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 args json,

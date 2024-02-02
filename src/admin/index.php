@@ -46,7 +46,7 @@ function admin_menu() {
         'manage_options',
         'miso',
         __NAMESPACE__ . '\admin_page',
-        //'dashicons-admin-site'
+        '',
     );
     add_submenu_page(
         'miso',
@@ -105,6 +105,63 @@ function settings_page() {
     <?php
 }
 
+class RecentTasks {
+
+    static $COLUMNS = [
+        [
+            'key' => 'status',
+            'label' => 'Status',
+        ],
+        [
+            'key' => 'uploaded',
+            'label' => 'Uploaded',
+            'value' => [__CLASS__, 'get_uploaded'],
+        ],
+        [
+            'key' => 'deleted',
+            'label' => 'Deleted',
+            'value' => [__CLASS__, 'get_deleted'],
+        ],
+        [
+            'key' => 'created_by',
+            'label' => 'Created By',
+            'value' => [__CLASS__, 'get_created_by'],
+        ],
+        [
+            'key' => 'created_at',
+            'label' => 'Created At',
+        ],
+        [
+            'key' => 'modified_at',
+            'label' => 'Updated At',
+        ],
+    ];
+
+    static function get_uploaded($task) {
+        $data = $task['data'] ?? [];
+        $uploaded = $data['uploaded'] ?? 0;
+        $total = $data['total'] ?? 0;
+        return $uploaded . ' / ' . $total;
+    }
+
+    static function get_deleted($task) {
+        $data = $task['data'] ?? [];
+        return $data['deleted'] ?? '0';
+    }
+
+    static function get_created_by($task) {
+        if ($task['created_via'] == 'wp-cli') {
+            return 'WP CLI';
+        }
+        $user_id = $task['created_by'] ?? 0;
+        return $user_id > 0 ? get_user_by('id', $user_id)->user_login : 'Unknown';
+    }
+
+    static function get_value($task, $column) {
+        return array_key_exists('value', $column) && is_callable($column['value']) ? call_user_func($column['value'], $task) : $task[$column['key']] ?? '';
+    }
+}
+
 function posts_page() {
     $has_api_key = \Miso\has_api_key();
     $recent_tasks = Operations::recent_tasks();
@@ -129,25 +186,16 @@ function posts_page() {
         <h1>Recent sync tasks</h1>
         <table id="recent-tasks" class="widefat fixed striped" cellspacing="0">
             <thead>
-                <th class="manage-column column-columnname" scope="col">Status</th>
-                <th class="manage-column column-columnname" scope="col">Uploaded</th>
-                <th class="manage-column column-columnname" scope="col">Deleted</th>
-                <th class="manage-column column-columnname" scope="col">Created At</th>
-                <th class="manage-column column-columnname" scope="col">Updated At</th>
+                <?php foreach (RecentTasks::$COLUMNS as $column): ?>
+                    <th class="manage-column column-columnname" scope="col" data-column="<?php echo $column['key']; ?>"><?php echo $column['label']; ?></th>
+                <? endforeach; ?>
             </thead>
             <tbody>
-                <?php foreach ($recent_tasks as $task):
-                    $data = $task['data'] ?? [];
-                    $uploaded = $data['uploaded'] ?? 0;
-                    $total = $data['total'] ?? 0;
-                    $deleted = $data['deleted'] ?? 0;
-                ?>
+                <?php foreach ($recent_tasks as $task): ?>
                     <tr data-task-id="<?php echo $task['id']; ?>">
-                        <td class="column-columnname"><?php echo $task['status'] ?? ''; ?></td>
-                        <td class="column-columnname"><?php echo $uploaded; ?> / <?php echo $total; ?></td>
-                        <td class="column-columnname"><?php echo $deleted; ?></td>
-                        <td class="column-columnname"><?php echo $task['created_at'] ?? ''; ?></td>
-                        <td class="column-columnname"><?php echo $task['modified_at'] ?? ''; ?></td>
+                        <?php foreach (RecentTasks::$COLUMNS as $column): ?>
+                            <td class="column-columnname" data-column="<?php echo $column['key']; ?>"><?php echo RecentTasks::get_value($task, $column); ?></td>
+                        <? endforeach; ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -174,7 +222,7 @@ function send_form() {
 }
 
 function sync_posts(array $args) {
-    Operations::enqueue_sync_posts([]);
+    Operations::enqueue_sync_posts('admin-page', []);
     wp_send_json_success();
 }
 
@@ -182,7 +230,15 @@ function heartbeat_send($response, $screen_id) {
     if ($screen_id !== 'toplevel_page_miso') {
         return $response;
     }
-    $response['miso_recent_tasks'] = Operations::recent_tasks();
+    $response['miso_recent_tasks'] = array_map(function($task) {
+        $entry = [
+            'id' => $task['id'],
+        ];
+        foreach (RecentTasks::$COLUMNS as $column) {
+            $entry[$column['key']] = RecentTasks::get_value($task, $column);
+        }
+        return $entry;
+    } , Operations::recent_tasks());
     return $response;
 }
 

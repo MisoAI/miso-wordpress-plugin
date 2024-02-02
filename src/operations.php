@@ -10,17 +10,17 @@ class Operations {
         return DataBase::recent_tasks();
     }
 
-    public static function enqueue_sync_posts($args = []) {
+    public static function enqueue_sync_posts($source, $args = []) {
 
         // TODO: bounce if another task is running
 
-        $task = self::create_task($args, 'queued');
+        $task = self::create_task($source, $args, 'queued');
         as_enqueue_async_action('miso_sync_posts_hook', [$task]);
         spawn_cron();
     }
 
-    public static function sync_posts($args) {
-        $task = self::create_task($args, 'started');
+    public static function sync_posts($source, $args) {
+        $task = self::create_task($source, $args, 'started');
         self::run_sync_posts($task);
     }
 
@@ -110,9 +110,12 @@ class Operations {
         }
     }
 
-    protected static function create_task($args, $status) {
+    protected static function create_task($source, $args, $status) {
+        $current_user = wp_get_current_user();
         $task = DataBase::create_task([
             'type' => 'sync_posts',
+            'created_by' => $current_user->ID,
+            'created_via' => $source, // 'admin-page', 'wp-cli'
             'args' => $args,
             'status' => $status,
         ]);
