@@ -90,7 +90,13 @@ class Operations {
             $task['data']['phase'] = 'delete';
             self::update_task($task);
 
-            $misoIds = $miso->products->ids();
+            $misoIds = [];
+            try {
+                // on first sync, the catalog index may not be ready in time, throwing 404 error
+                $misoIds = $miso->products->ids();
+            } catch (\Exception $e) {
+                // ignore
+            }
             $idsToDelete = array_diff($misoIds, $wpIds);
             $deleted = count($idsToDelete);
             if ($deleted > 0) {
