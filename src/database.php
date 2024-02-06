@@ -25,6 +25,11 @@ class DataBase {
     }
 
     public static function create_task($task) {
+        try {
+            self::truncate_task_table();
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+        }
         global $wpdb;
         $table_name = self::table_name('task');
         $current_time = current_time('mysql', 1);
@@ -53,6 +58,15 @@ class DataBase {
                 'id' => $task['id'],
             ],
         );
+    }
+
+    protected static function truncate_task_table() {
+        global $wpdb;
+        $table_name = self::table_name('task');
+        $id = $wpdb->get_var("SELECT id FROM {$table_name} ORDER BY id DESC LIMIT 1 OFFSET 30");
+        if ($id !== null) {
+            $wpdb->query("DELETE FROM {$table_name} WHERE id <= {$id}");
+        }
     }
 
     protected static function create_task_table() {
