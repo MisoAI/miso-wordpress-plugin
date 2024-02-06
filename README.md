@@ -1,6 +1,6 @@
 # Miso WordPress plugin
 
-This is the official plugin for miso.ai data integration, which sync your WordPress posts to your Miso catalog.
+This is the official plugin for [Miso AI](https://miso.ai/) data integration, which sync your WordPress posts to your Miso catalog.
 
 Miso.ai is a LLM API service that answers questions accurately solely based on your content. This plugin keeps your Miso catalog up-to-date by syncing your WordPress posts to your Miso catalog by the following features:
 
