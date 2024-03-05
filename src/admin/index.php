@@ -34,7 +34,7 @@ function admin_menu() {
         function () {
             $options = get_option('miso_settings', []);
             $api_key = array_key_exists('api_key', $options) ? $options['api_key'] : '';
-            echo '<input type="text" name="miso_settings[api_key]" value="' . $api_key . '" style="min-width: 400px;" />';
+            echo '<input type="text" name="miso_settings[api_key]" value="' . esc_attr($api_key) . '" style="min-width: 400px;" />';
         },
         'miso',
         'miso_settings',
@@ -65,7 +65,7 @@ function admin_menu() {
 }
 
 function get_request_var($name) {
-    return isset($_REQUEST[$name]) ? $_REQUEST[$name] : null;
+    return isset($_REQUEST[$name]) ? sanitize_text_field($_REQUEST[$name]) : null;
 }
 
 function submenu_file($submenu_file, $parent_file) {
@@ -187,14 +187,14 @@ function posts_page() {
         <table id="recent-tasks" class="widefat fixed striped" cellspacing="0">
             <thead>
                 <?php foreach (RecentTasks::$COLUMNS as $column): ?>
-                    <th class="manage-column column-columnname" scope="col" data-column="<?php echo $column['key']; ?>"><?php echo $column['label']; ?></th>
+                    <th class="manage-column column-columnname" scope="col" data-column="<?php echo esc_attr($column['key']); ?>"><?php echo esc_html($column['label']); ?></th>
                 <? endforeach; ?>
             </thead>
             <tbody>
                 <?php foreach ($recent_tasks as $task): ?>
                     <tr data-task-id="<?php echo $task['id']; ?>">
                         <?php foreach (RecentTasks::$COLUMNS as $column): ?>
-                            <td class="column-columnname" data-column="<?php echo $column['key']; ?>"><?php echo RecentTasks::get_value($task, $column); ?></td>
+                            <td class="column-columnname" data-column="<?php echo esc_attr($column['key']); ?>"><?php echo esc_html(RecentTasks::get_value($task, $column)); ?></td>
                         <? endforeach; ?>
                     </tr>
                 <?php endforeach; ?>
@@ -208,20 +208,20 @@ function send_form() {
     // validate source
     check_ajax_referer('secure_nonce_name', '_nonce');
 
-    $operation = $_POST['operation'] ?? null;
+    $operation = isset($_POST['operation']) ? sanitize_text_field($_POST['operation']) : null;
     if (empty($operation)) {
         wp_send_json_error('Operation not found', 400);
     }
     switch ($operation) {
         case 'sync-posts':
-            sync_posts($_POST);
+            sync_posts();
             break;
         default:
             wp_send_json_error('Unrecognized operation: ' . $operation, 400);
     }
 }
 
-function sync_posts(array $args) {
+function sync_posts() {
     Operations::enqueue_sync_posts('admin-page', []);
     wp_send_json_success();
 }

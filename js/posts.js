@@ -4,15 +4,19 @@ const RECENT_TASKS_COLUMNS = [
   'status', 'uploaded', 'deleted', 'created_by', 'created_at', 'modified_at',
 ];
 
+function escapeHtml(value) {
+  return `${value}`.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 // update recent tasks from heartbeat response
 $(document).on('heartbeat-tick', (event, { miso_recent_tasks } = {}) => {
   for (const task of miso_recent_tasks) {
     const $tr = $('#recent-tasks tr[data-task-id="' + task.id + '"]');
     if ($tr.length === 0) {
-      $('#recent-tasks tbody').prepend(`<tr data-task-id="${task.id}">${ RECENT_TASKS_COLUMNS.map(column => `<td class="column-columnname" data-column=${column}>${ task[column] }</td>`) }</tr>`);
+      $('#recent-tasks tbody').prepend(`<tr data-task-id="${task.id}">${ RECENT_TASKS_COLUMNS.map(column => `<td class="column-columnname" data-column=${escapeHtml(column)}>${escapeHtml(task[column])}</td>`) }</tr>`);
     } else {
       for (const column of RECENT_TASKS_COLUMNS) {
-        $tr.find(`td[data-column=${column}]`).text(task[column]);
+        $tr.find(`td[data-column=${escapeHtml(column)}]`).text(task[column]);
       }
     }
   }

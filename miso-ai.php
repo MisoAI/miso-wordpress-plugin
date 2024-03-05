@@ -5,7 +5,7 @@
  * Description:       The official WordPress plugin for Miso AI data integration. 
  * Version:           0.9.0
  * Author:            Simon Pai
- * License:           GPL-2.0+
+ * License:           GPL v2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * GitHub Plugin URI: https://github.com/MisoAI/miso-wordpress-plugin
  */
