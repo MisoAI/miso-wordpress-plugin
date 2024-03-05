@@ -28,13 +28,13 @@ $(document).ready(($) => {
     event.preventDefault();
     const $form = $(event.target);
     const $button = $form.find('input[type="submit"]');
-    const formData = $form.serializeArray();
-    formData.push({ name: '_nonce', value: window.ajax_nonce });
+    const data = $form.serializeArray();
+    data.push({ name: '_ajax_nonce', value: window.miso_sync_posts_form_context.ajax_nonce });
     $button.prop('disabled', true);
     $.ajax({
-      url: window.ajax_url,
+      url: window.miso_sync_posts_form_context.ajax_url,
       method: 'POST',
-      data: formData,
+      data,
       success: (response) => {
         $button.prop('disabled', false);
         wp.heartbeat.connectNow();

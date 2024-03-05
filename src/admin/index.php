@@ -82,6 +82,10 @@ function admin_page() {
     switch ($view) {
         case 'posts':
             wp_enqueue_script('miso-posts');
+            wp_localize_script('miso-posts', 'miso_sync_posts_form_context', [
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'ajax_nonce' => wp_create_nonce('miso_sync_posts_form'),
+            ]);
             posts_page();
             break;
         default:
@@ -166,10 +170,6 @@ function posts_page() {
     $has_api_key = \Miso\has_api_key();
     $recent_tasks = Operations::recent_tasks();
     ?>
-    <script>
-        window.ajax_url = '<?php echo admin_url( "admin-ajax.php" ); ?>';
-        window.ajax_nonce = '<?php echo wp_create_nonce( "secure_nonce_name" ); ?>';
-    </script>
     <div class="wrap">
         <h1>Posts</h1>
         <p>Upload all posts to Miso catalog and delete extra records from Miso catalog.</p>
@@ -205,12 +205,15 @@ function posts_page() {
 }
 
 function send_form() {
-    // validate source
-    check_ajax_referer('secure_nonce_name', '_nonce');
-
+    // validate nonce
+    if (!check_ajax_referer('miso_sync_posts_form')) {
+        wp_send_json_error('Invalid nonce', 400);
+        return;
+    }
     $operation = isset($_POST['operation']) ? sanitize_text_field($_POST['operation']) : null;
     if (empty($operation)) {
         wp_send_json_error('Operation not found', 400);
+        return;
     }
     switch ($operation) {
         case 'sync-posts':
