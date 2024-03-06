@@ -188,14 +188,14 @@ function posts_page() {
             <thead>
                 <?php foreach (RecentTasks::$COLUMNS as $column): ?>
                     <th class="manage-column column-columnname" scope="col" data-column="<?php echo esc_attr($column['key']); ?>"><?php echo esc_html($column['label']); ?></th>
-                <? endforeach; ?>
+                <?php endforeach; ?>
             </thead>
             <tbody>
                 <?php foreach ($recent_tasks as $task): ?>
                     <tr data-task-id="<?php echo $task['id']; ?>">
                         <?php foreach (RecentTasks::$COLUMNS as $column): ?>
                             <td class="column-columnname" data-column="<?php echo esc_attr($column['key']); ?>"><?php echo esc_html(RecentTasks::get_value($task, $column)); ?></td>
-                        <? endforeach; ?>
+                        <?php endforeach; ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
