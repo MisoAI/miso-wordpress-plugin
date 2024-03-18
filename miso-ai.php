@@ -10,6 +10,10 @@
  * GitHub Plugin URI: https://github.com/MisoAI/miso-wordpress-plugin
  */
 
+if (!defined('ABSPATH')) {
+    exit; // Exit if accessed directly
+}
+
 require_once __DIR__ . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
 require_once __DIR__ . '/vendor/autoload.php';
 

@@ -29,11 +29,11 @@ function admin_menu() {
         'miso',
     );
     add_settings_field(
-        'api_key',
+        'miso_api_key',
         'Secret API Key',
         function () {
             $options = get_option('miso_settings', []);
-            $api_key = array_key_exists('api_key', $options) ? $options['api_key'] : '';
+            $api_key = array_key_exists('miso_api_key', $options) ? $options['miso_api_key'] : '';
             echo '<input type="text" name="miso_settings[api_key]" value="' . esc_attr($api_key) . '" style="min-width: 400px;" />';
         },
         'miso',
@@ -192,7 +192,7 @@ function posts_page() {
             </thead>
             <tbody>
                 <?php foreach ($recent_tasks as $task): ?>
-                    <tr data-task-id="<?php echo $task['id']; ?>">
+                    <tr data-task-id="<?php echo esc_attr($task['id']); ?>">
                         <?php foreach (RecentTasks::$COLUMNS as $column): ?>
                             <td class="column-columnname" data-column="<?php echo esc_attr($column['key']); ?>"><?php echo esc_html(RecentTasks::get_value($task, $column)); ?></td>
                         <?php endforeach; ?>
