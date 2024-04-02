@@ -6,9 +6,11 @@ Stable Tag: 0.9.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-This is the official plugin for Miso AI (https://miso.ai/) data integration, which sync your WordPress posts to your Miso catalog.
+This is the official plugin for [Miso AI](https://miso.ai/) data integration, which sync your WordPress posts to your Miso catalog.
 
 == Description ==
+
+This is the official plugin for [Miso AI](https://miso.ai/) data integration, which sync your WordPress posts to your Miso catalog.
 
 Miso AI is a LLM API service that answers questions accurately solely based on your content. This plugin helps you establish a data pipeline that updates your Miso catalog with your WordPress posts. To use the plugin, it is required to have a Miso account.
 
@@ -29,7 +31,7 @@ Given that you have already registered a Miso account, you can set up your data 
 
 == Privacy policies ==
 
-See Miso's privacy policy page (https://miso.ai/privacy-policy) for more information.
+See Miso's [privacy policy page](https://miso.ai/privacy-policy) for more information.
 
 == Changelog ==
 
