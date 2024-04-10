@@ -34,7 +34,7 @@ function admin_menu() {
         function () {
             $options = get_option('miso_settings', []);
             $api_key = array_key_exists('miso_api_key', $options) ? $options['miso_api_key'] : '';
-            echo '<input type="text" name="miso_settings[api_key]" value="' . esc_attr($api_key) . '" style="min-width: 400px;" />';
+            echo '<input type="text" name="miso_settings[miso_api_key]" value="' . esc_attr($api_key) . '" style="min-width: 400px;" />';
         },
         'miso',
         'miso_settings',
