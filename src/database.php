@@ -15,7 +15,7 @@ class DataBase {
     public static function recent_tasks() {
         global $wpdb;
         $table_name = self::table_name('task');
-        $tasks = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT 10"), ARRAY_A);
+        $tasks = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT 10", ARRAY_A);
         return array_map(function($task) {
             $task['args'] = json_decode($task['args'], true);
             $task['data'] = json_decode($task['data'], true);
@@ -62,7 +62,7 @@ class DataBase {
     protected static function truncate_task_table() {
         global $wpdb;
         $table_name = self::table_name('task');
-        $id = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table_name} ORDER BY id DESC LIMIT 1 OFFSET 30"));
+        $id = $wpdb->get_var("SELECT id FROM {$table_name} ORDER BY id DESC LIMIT 1 OFFSET 30");
         if ($id !== null) {
             $wpdb->query($wpdb->prepare("DELETE FROM {$table_name} WHERE id <= %d", $id));
         }
@@ -94,7 +94,7 @@ class DataBase {
     protected static function drop_task_table() {
         global $wpdb;
         $table_name = self::table_name('task');
-        $wpdb->query($wpdb->prepare("DROP TABLE IF EXISTS {$table_name}"));
+        $wpdb->query("DROP TABLE IF EXISTS {$table_name}");
     }
 
     protected static function table_name($name) {
