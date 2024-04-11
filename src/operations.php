@@ -61,7 +61,7 @@ class Operations {
 
                 // transform posts to Miso records
                 foreach ($posts->posts as $post) {
-                    $record = (array) apply_filters('post_to_record', $post);
+                    $record = post_to_record($post);
                     $records[] = $record;
 
                     // keep track of post IDs

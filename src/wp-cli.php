@@ -37,7 +37,7 @@ class WP_CLI_MisoCommand {
         \WP_CLI::line("\n[Post]");
         var_dump($post);
 
-        $record = (array) apply_filters('post_to_record', $post);
+        $record = post_to_record($post);
         \WP_CLI::line("\n[Record]");
         var_dump($record);
     }
