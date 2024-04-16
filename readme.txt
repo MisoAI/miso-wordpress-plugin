@@ -37,7 +37,7 @@ See Miso's [privacy policy page](https://miso.ai/privacy-policy) for more inform
 
 = 0.9.2 =
 * Feature: [#7](https://github.com/MisoAI/miso-wordpress-plugin/issues/7) Take custom filter 'miso_post_to_record'
-* Fix: API options
+* Fix: API key options
 * Fix: Update hooks
 
 = 0.9.1 =
