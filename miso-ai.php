@@ -3,7 +3,7 @@
  * Plugin Name:       Miso AI
  * Plugin URI:        https://miso.ai/
  * Description:       The official WordPress plugin for Miso AI data integration. 
- * Version:           0.9.1
+ * Version:           0.9.2
  * Author:            Simon Pai
  * License:           GPL v2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
