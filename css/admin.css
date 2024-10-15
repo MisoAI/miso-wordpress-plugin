@@ -13,3 +13,39 @@
   content: '\0041';
   transform: scale(0.75);
 }
+
+#recent-tasks th.column-toggle-open {
+  width: 1.4em !important;
+}
+#recent-tasks .column-toggle-open {
+  padding: 8px !important;
+}
+#recent-tasks .toggle-open {
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  display: none;
+  cursor: pointer;
+}
+#recent-tasks tr.has-details .toggle-open {
+  display: flex;
+}
+#recent-tasks .toggle-open::before {
+  content: '+';
+}
+#recent-tasks tr.open .toggle-open::before {
+  content: '-';
+}
+#recent-tasks tr.task-details {
+  display: none;
+}
+#recent-tasks tr.open + tr.task-details {
+  display: table-row;
+}
+#recent-tasks tr.task-details td {
+  padding: 1rem;
+}
+#recent-tasks tr.task-details h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}

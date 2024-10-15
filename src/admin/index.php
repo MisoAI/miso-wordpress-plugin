@@ -141,6 +141,14 @@ class RecentTasks {
         ],
     ];
 
+    static $DETAILS = [
+        [
+            'key' => 'error',
+            'label' => 'Error',
+            'value' => [__CLASS__, 'get_error'],
+        ],
+    ];
+
     static function get_uploaded($task) {
         $data = $task['data'] ?? [];
         $uploaded = $data['uploaded'] ?? 0;
@@ -159,6 +167,20 @@ class RecentTasks {
         }
         $user_id = $task['created_by'] ?? 0;
         return $user_id > 0 ? get_user_by('id', $user_id)->user_login : 'Unknown';
+    }
+
+    static function get_error($task) {
+        $data = $task['data'] ?? [];
+        return $data['error'] ?? '';
+    }
+
+    static function has_details($task) {
+        foreach (self::$DETAILS as $column) {
+            if (!empty(self::get_value($task, $column))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     static function get_value($task, $column) {
@@ -186,16 +208,30 @@ function posts_page() {
         <h1>Recent sync tasks</h1>
         <table id="recent-tasks" class="widefat fixed striped" cellspacing="0">
             <thead>
+                <th class="manage-column column-columnname column-toggle-open" scope="col"></th>
                 <?php foreach (RecentTasks::$COLUMNS as $column): ?>
                     <th class="manage-column column-columnname" scope="col" data-column="<?php echo esc_attr($column['key']); ?>"><?php echo esc_html($column['label']); ?></th>
                 <?php endforeach; ?>
             </thead>
             <tbody>
                 <?php foreach ($recent_tasks as $task): ?>
-                    <tr data-task-id="<?php echo esc_attr($task['id']); ?>">
+                    <tr data-task-id="<?php echo esc_attr($task['id']); ?>"<?php if (RecentTasks::has_details($task)) { echo ' class="has-details"'; }; ?>>
+                        <td class="column-columnname column-toggle-open">
+                            <div class="toggle-open" data-role="toggle-open"></div>
+                        </td>
                         <?php foreach (RecentTasks::$COLUMNS as $column): ?>
                             <td class="column-columnname" data-column="<?php echo esc_attr($column['key']); ?>"><?php echo esc_html(RecentTasks::get_value($task, $column)); ?></td>
                         <?php endforeach; ?>
+                    </tr>
+                    <tr class="task-details">
+                        <td class="column-columnname" colspan="<?php echo esc_attr(count(RecentTasks::$COLUMNS) + 1); ?>">
+                            <?php foreach (RecentTasks::$DETAILS as $column): ?>
+                                <section data-column="<?php echo esc_attr($column['key']); ?>">
+                                    <h3><?php echo esc_html($column['label']); ?></h3>
+                                    <div class="value"><?php echo esc_html(RecentTasks::get_value($task, $column)); ?></div>
+                                </section>
+                            <?php endforeach; ?>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -239,6 +275,10 @@ function heartbeat_send($response, $screen_id) {
         ];
         foreach (RecentTasks::$COLUMNS as $column) {
             $entry[$column['key']] = RecentTasks::get_value($task, $column);
+        }
+        $error = RecentTasks::get_error($task);
+        if (!empty($error)) {
+            $entry['error'] = $error;
         }
         return $entry;
     } , Operations::recent_tasks());
