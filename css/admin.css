@@ -8,6 +8,17 @@
   font-weight: normal;
   font-style: normal;
 }
+.form-table td > p {
+  padding: 0 4px;
+}
+.form-table td input::placeholder {
+  color: #999;
+}
+.form-table td > ul {
+  list-style: initial;
+  padding: 0 4px;
+}
+
 #toplevel_page_miso .wp-menu-image::before {
   font-family: 'MisoIcon';
   content: '\0041';

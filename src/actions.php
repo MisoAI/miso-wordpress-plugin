@@ -2,6 +2,8 @@
 
 namespace Miso;
 
+use Miso\Utils;
+
 // cascade save_post
 function update_post($id, \WP_Post $post, $update) {
     if (wp_is_post_revision($id) || wp_is_post_autosave($id)) {
@@ -16,7 +18,7 @@ function update_post($id, \WP_Post $post, $update) {
     // transform to Miso record
     $record = post_to_record($post);
     
-    if ($post->post_status !== 'publish') {
+    if (Utils\shall_be_deleted($record)) {
         // shall delete from Miso catalog
         $client->products->delete([$record['product_id']]);
     } else {

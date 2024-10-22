@@ -3,6 +3,7 @@
 namespace Miso;
 
 use Miso\DataBase;
+use Miso\Utils;
 
 class Operations {
 
@@ -61,7 +62,12 @@ class Operations {
 
                 // transform posts to Miso records
                 foreach ($posts->posts as $post) {
-                    $record = post_to_record($post);
+                    $record = post_to_record($post, $args);
+
+                    if (Utils\shall_be_deleted($record)) {
+                        continue; // omit records that are marked to be deleted
+                    }
+
                     $records[] = $record;
 
                     // keep track of post IDs
@@ -97,6 +103,14 @@ class Operations {
             } catch (\Exception $e) {
                 // ignore
             }
+            // respect product_id_prefix
+            $product_id_prefix = $args['product_id_prefix'] ?? null;
+            if (!is_null($product_id_prefix)) {
+                $misoIds = array_filter($misoIds, function($id) use ($product_id_prefix) {
+                    return strpos($id, $product_id_prefix) === 0;
+                });
+            }
+            // delete records not found in WP
             $idsToDelete = array_diff($misoIds, $wpIds);
             $deleted = count($idsToDelete);
             if ($deleted > 0) {

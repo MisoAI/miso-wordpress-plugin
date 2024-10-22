@@ -34,7 +34,24 @@ function admin_menu() {
         function () {
             $options = get_option('miso_settings', []);
             $api_key = array_key_exists('miso_api_key', $options) ? $options['miso_api_key'] : '';
-            echo '<input type="text" name="miso_settings[miso_api_key]" value="' . esc_attr($api_key) . '" style="min-width: 400px;" />';
+            echo '<div><input type="text" name="miso_settings[miso_api_key]" value="' . esc_attr($api_key) . '" style="min-width: 400px;"></div>' .
+                '<p>An API key is required for Miso data integration.<br>' .
+                'You can get your secret API key from <a href="https://dojo.askmiso.com/" target="_blank">Miso dashboard</a>.</p>';
+        },
+        'miso',
+        'miso_settings',
+    );
+    add_settings_field(
+        'miso_product_id_prefix',
+        'Product ID Prefix<br>(optional)',
+        function () {
+            $options = get_option('miso_settings', []);
+            $product_id_prefix = array_key_exists('miso_product_id_prefix', $options) ? $options['miso_product_id_prefix'] : '';
+            echo '<div><input type="text" name="miso_settings[miso_product_id_prefix]" placeholder="myprefix_" value="' . esc_attr($product_id_prefix) . '" style="min-width: 400px;"></div>' .
+                '<p>Prepend a prefix to Miso product_id when generating Miso records.<br>' .
+                'For example, a post with id "12345" and prefix "mysite1_" will map to a Miso record with product_id "mysite1_12345".<br>' .
+                'By setting different prefixes, you can manage data from multiple sites into one Miso catalog.<br>' .
+                'When performing a full-sync, only Miso records with the prefix will be deleted.</p>';
         },
         'miso',
         'miso_settings',
@@ -97,7 +114,6 @@ function settings_page() {
     ?>
     <div class="wrap">
         <h1>Settings</h1>
-        <p>An API key is required for Miso data integration. You can get your secret API key from <a href="https://dojo.askmiso.com/" target="_blank">Miso dashboard</a>.</p>
         <form method="post" action="options.php">
             <?php
                 settings_fields('miso');
@@ -261,7 +277,10 @@ function send_form() {
 }
 
 function sync_posts() {
-    Operations::enqueue_sync_posts('admin-page', []);
+    $product_id_prefix = get_option('miso_settings')['miso_product_id_prefix'] ?? null;
+    Operations::enqueue_sync_posts('admin-page', [
+        'product_id_prefix' => $product_id_prefix,
+    ]);
     wp_send_json_success();
 }
 

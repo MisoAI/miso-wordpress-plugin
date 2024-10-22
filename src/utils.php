@@ -6,9 +6,19 @@ function format_date($date) {
     return $date ? date_create_immutable($date, timezone_open('UTC'))->format('Y-m-d\TH:i:s\Z') : null;
 }
 
-function default_post_to_record(\WP_Post $post) {
+function default_post_to_record(\WP_Post $post, $args = []) {
+
+    $product_id_prefix = $args['product_id_prefix'] ?? '';
 
     $id = $post->ID;
+    $product_id = $product_id_prefix . strval($id);
+
+    if ($post->post_status !== 'publish') {
+        return [
+            'product_id' => $product_id,
+            '_delete' => true,
+        ];
+    }
 
     $tags = array_map(function (\WP_Term $term) {
         return $term->name;
@@ -20,7 +30,7 @@ function default_post_to_record(\WP_Post $post) {
     $cover_image = get_the_post_thumbnail_url($id, 'medium_large');
 
     return [
-        'product_id' => strval($id),
+        'product_id' => $product_id,
         'published_at' => format_date($post->post_date_gmt),
         'updated_at' => format_date($post->post_modified_gmt),
         'type' => 'post',
@@ -32,4 +42,8 @@ function default_post_to_record(\WP_Post $post) {
         'categories' => $categories,
         'url' => get_permalink($id),
     ];
+}
+
+function shall_be_deleted($record) {
+    return !!$record['_delete'];
 }

@@ -6,6 +6,10 @@ function has_api_key() {
     return !!(get_option('miso_settings')['miso_api_key'] ?? false);
 }
 
+function has_product_id_prefix() {
+    return !!(get_option('miso_settings')['miso_product_id_prefix'] ?? false);
+}
+
 function create_client() {
     $api_key = get_option('miso_settings')['miso_api_key'] ?? null;
     if (!$api_key) {
