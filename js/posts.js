@@ -26,7 +26,7 @@ function taskHtml(task) {
 }
 
 function taskHtmlColumns(task) {
-  return RECENT_TASKS_COLUMNS.map(column => `<td class="column-columnname" data-column=${escapeHtml(column)}>${escapeHtml(task[column])}</td>`);
+  return `<td class="column-columnname"></td>` + RECENT_TASKS_COLUMNS.map(column => `<td class="column-columnname" data-column=${escapeHtml(column)}>${escapeHtml(task[column])}</td>`);
 }
 
 function taskHtmlDetails(task) {
