@@ -40,7 +40,7 @@ function updateTaskTr($tr, task) {
   for (const column of RECENT_TASKS_DETAILS) {
     $tr.find(`section[data-column=${column.key}] .value`).text(task[column.key]);
   }
-  $tr[hasDetail ? 'addClass' : 'removeClass']('has-details');
+  $tr[hasDetails(task) ? 'addClass' : 'removeClass']('has-details');
 }
 
 // update recent tasks from heartbeat response
