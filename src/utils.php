@@ -45,5 +45,9 @@ function default_post_to_record(\WP_Post $post, $args = []) {
 }
 
 function shall_be_deleted($record) {
-    return !!$record['_delete'];
+    return array_key_exists('_delete', $record) && !!$record['_delete'];
+}
+
+function log($value) {
+    error_log(print_r($value, true));
 }
