@@ -206,11 +206,19 @@ class RecentTasks {
 
 function posts_page() {
     $has_api_key = \Miso\has_api_key();
+    $has_product_id_prefix = \Miso\has_product_id_prefix();
     $recent_tasks = Operations::recent_tasks();
     ?>
     <div class="wrap">
         <h1>Posts</h1>
-        <p>Upload all posts to Miso catalog and delete extra records from Miso catalog.</p>
+        <?php
+            if ($has_product_id_prefix):
+                $product_id_prefix = get_option('miso_settings')['miso_product_id_prefix'];
+        ?>
+            <p>Upload all posts to Miso catalog with product_id prefix <code><?php echo esc_html($product_id_prefix); ?></code> and delete extra records with product_id prefix <code><?php echo esc_html($product_id_prefix); ?></code> from Miso catalog.</p>
+        <?php else: ?>
+            <p>Upload all posts to Miso catalog and delete extra records from Miso catalog.</p>
+        <?php endif; ?>
         <?php if (!$has_api_key): ?>
             <p><strong>API key is required to perform operations.</strong></p>
         <?php endif; ?>
