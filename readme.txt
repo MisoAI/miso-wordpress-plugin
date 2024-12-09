@@ -2,7 +2,7 @@
 Contributors: misosimonpai
 Tags: Miso, AI, LLM
 Tested up to: 6.4
-Stable tag: 0.9.4
+Stable tag: 0.9.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,9 @@ Given that you have already registered a Miso account, you can set up your data 
 See Miso's [privacy policy page](https://miso.ai/privacy-policy) for more information.
 
 == Changelog ==
+
+= 0.9.5 =
+* Fix: product_id prefix in action hooks
 
 = 0.9.4 =
 * Feature: [#8](https://github.com/MisoAI/miso-wordpress-plugin/issues/8) Support multiple sites by product_id prefix.
