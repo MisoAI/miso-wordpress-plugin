@@ -6,6 +6,13 @@ function format_date($date) {
     return $date ? date_create_immutable($date, timezone_open('UTC'))->format('Y-m-d\TH:i:s\Z') : null;
 }
 
+function normalize_post_to_record_args($args = []) {
+    $product_id_prefix = get_option('miso_settings')['miso_product_id_prefix'] ?? null;
+    return array_merge([
+        'product_id_prefix' => $product_id_prefix,
+    ], $args);
+}
+
 function default_post_to_record(\WP_Post $post, $args = []) {
 
     $product_id_prefix = $args['product_id_prefix'] ?? '';

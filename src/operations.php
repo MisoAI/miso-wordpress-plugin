@@ -15,6 +15,7 @@ class Operations {
 
         // TODO: bounce if another task is running
 
+        $args = Utils\normalize_post_to_record_args($args);
         $task = self::create_task($source, $args, 'queued');
         as_enqueue_async_action('miso_sync_posts_hook', [$task]);
         spawn_cron();

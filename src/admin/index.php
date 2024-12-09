@@ -285,10 +285,7 @@ function send_form() {
 }
 
 function sync_posts() {
-    $product_id_prefix = get_option('miso_settings')['miso_product_id_prefix'] ?? null;
-    Operations::enqueue_sync_posts('admin-page', [
-        'product_id_prefix' => $product_id_prefix,
-    ]);
+    Operations::enqueue_sync_posts('admin-page');
     wp_send_json_success();
 }
 

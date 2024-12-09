@@ -39,6 +39,8 @@ function my_miso_post_to_record_0(array $record, WP_Post $post) {
 add_filter('miso_post_to_record', 'my_miso_post_to_record_0', 10, 2);
 ```
 
+Alternatively, you can also place it in `functions.php` of your theme.
+
 ### Modify the filter function
 
 Here is an example to add a prefix to `product_id`:

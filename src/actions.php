@@ -16,7 +16,8 @@ function update_post($id, \WP_Post $post, $update) {
     $client = create_client();
 
     // transform to Miso record
-    $record = post_to_record($post);
+    $args = Utils\normalize_post_to_record_args();
+    $record = post_to_record($post, $args);
     
     if (Utils\shall_be_deleted($record)) {
         // shall delete from Miso catalog

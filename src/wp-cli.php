@@ -3,6 +3,7 @@
 namespace Miso;
 
 use Miso\Operations;
+use Miso\Utils;
 
 if (!class_exists('\WP_CLI')) {
     return;
@@ -15,7 +16,7 @@ class WP_CLI_MisoCommand {
     public function sync($args, $assoc_args) {
         add_action('miso_task_progress', __NAMESPACE__ . '\wp_cli_log');
         try {
-            Operations::sync_posts('wp-cli', []);
+            Operations::sync_posts('wp-cli', Utils\normalize_post_to_record_args());
         } catch (\Exception $e) {
             \WP_CLI::error($e->getMessage());
         } finally {
@@ -37,7 +38,7 @@ class WP_CLI_MisoCommand {
         \WP_CLI::line("\n[Post]");
         var_dump($post);
 
-        $record = post_to_record($post);
+        $record = post_to_record($post, Utils\normalize_post_to_record_args());
         \WP_CLI::line("\n[Record]");
         var_dump($record);
     }
