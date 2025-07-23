@@ -40,7 +40,7 @@ function default_post_to_record(\WP_Post $post, $args = []) {
         'product_id' => $product_id,
         'published_at' => format_date($post->post_date_gmt),
         'updated_at' => format_date($post->post_modified_gmt),
-        'type' => 'post',
+        'type' => $post->post_type,
         'title' => $post->post_title,
         'html' => $post->post_content,
         'cover_image' => $cover_image ? $cover_image : null,
@@ -53,6 +53,23 @@ function default_post_to_record(\WP_Post $post, $args = []) {
 
 function shall_be_deleted($record) {
     return array_key_exists('_delete', $record) && !!$record['_delete'];
+}
+
+function get_post_type_choices() {
+    // post, page, and custom post types
+    return array_merge(['post', 'page'], get_post_types([
+        'public' => true,
+        '_builtin' => false,
+    ]));
+}
+
+function get_miso_post_types() {
+    return get_option('miso_settings')['miso_post_types'] ?? get_miso_post_types_default_value();
+}
+
+function get_miso_post_types_default_value() {
+    // default value is post only
+    return ['post'];
 }
 
 function log($value) {

@@ -32,7 +32,7 @@ class Operations {
 
         $args = $task['args'] ?? [];
         $query = $args['query'] ?? [
-            'post_type' => 'post',
+            'post_type' => Utils\get_miso_post_types(),
             'post_status' => 'publish',
         ];
 

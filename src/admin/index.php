@@ -3,6 +3,7 @@
 namespace Miso\Admin;
 
 use Miso\Operations;
+use Miso\Utils;
 
 function admin_menu() {
     // resources
@@ -17,6 +18,8 @@ function admin_menu() {
             'type' => 'array',
             'description' => 'Miso Settings',
             'sanitize_callback' => function ($value) {
+                $available_post_types = get_post_types();
+                $value['miso_post_types'] = array_intersect($value['miso_post_types'], $available_post_types);
                 return $value;
             },
             'show_in_rest' => false,
@@ -30,7 +33,7 @@ function admin_menu() {
     );
     add_settings_field(
         'miso_api_key',
-        'Secret API Key',
+        'Secret API key',
         function () {
             $options = get_option('miso_settings', []);
             $api_key = array_key_exists('miso_api_key', $options) ? $options['miso_api_key'] : '';
@@ -43,7 +46,7 @@ function admin_menu() {
     );
     add_settings_field(
         'miso_product_id_prefix',
-        'Product ID Prefix<br>(optional)',
+        'Product ID prefix<br>(optional)',
         function () {
             $options = get_option('miso_settings', []);
             $product_id_prefix = array_key_exists('miso_product_id_prefix', $options) ? $options['miso_product_id_prefix'] : '';
@@ -52,6 +55,23 @@ function admin_menu() {
                 'For example, a post with id "12345" and prefix "mysite1_" will map to a Miso record with product_id "mysite1_12345".<br>' .
                 'By setting different prefixes, you can manage data from multiple sites into one Miso catalog.<br>' .
                 'When performing a full-sync, only Miso records with the prefix will be deleted.</p>';
+        },
+        'miso',
+        'miso_settings',
+    );
+    add_settings_field(
+        'miso_post_types',
+        'Post types to upload',
+        function () {
+            $options = get_option('miso_settings', []);
+            $post_types = array_key_exists('miso_post_types', $options) ? $options['miso_post_types'] : Utils\get_miso_post_types_default_value();
+            $choices = Utils\get_post_type_choices();
+            foreach ($choices as $choice) {
+                echo '<label><input type="checkbox" name="miso_settings[miso_post_types][]" value="' . esc_attr($choice) . '" ' . checked(in_array($choice, $post_types), true, false) . '> ' . esc_html($choice) . '</label><br>';
+            }
+            echo '<p>Post types to be uploaded to Miso catalog.<br>' .
+                'Posts with checked post type will be uploaded to Miso when they are updated or when a "sync data" action is performed.<br>' .
+                'Changing this setting will not affect existing records in Miso catalog.</p>';
         },
         'miso',
         'miso_settings',

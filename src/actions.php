@@ -12,6 +12,9 @@ function update_post($id, \WP_Post $post, $update) {
     if (!has_api_key()) {
         return $post;
     }
+    if (!in_array($post->post_type, Utils\get_miso_post_types())) {
+        return $post;
+    }
 
     $client = create_client();
 
