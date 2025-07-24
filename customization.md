@@ -43,18 +43,7 @@ Alternatively, you can also place it in `functions.php` of your theme.
 
 ### Modify the filter function
 
-Here is an example to add a prefix to `product_id`:
-
-```php
-function my_miso_post_to_record_0(array $record, WP_Post $post) {
-    $record['product_id'] = 'my_prefix_' . $record['product_id'];
-    return $record;
-}
-
-add_filter('miso_post_to_record', 'my_miso_post_to_record_0', 10, 2);
-```
-
-Another example to add extra data to `custom_attributes`:
+Here is an example to add extra data to `custom_attributes`:
 
 ```php
 function my_miso_post_to_record_0(array $record, WP_Post $post) {
