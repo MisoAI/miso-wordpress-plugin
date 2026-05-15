@@ -16,7 +16,7 @@ Miso AI is a LLM API service that answers questions accurately solely based on y
 
 The plugin offers the following features:
 
-* Register `save_post` actions to cascade update or deletion to your Miso catalog.
+* Register `wp_after_insert_post` actions to cascade update or deletion to your Miso catalog.
 * Add menu pages to your WordPress admin panel to set your API key and perform data sync actions.
 * Offer WP-CLI commands to perform data sync actions.
 

@@ -2,9 +2,15 @@
 /.git
 /.github
 /vendor/php-stubs
+/bin
+/tests
+/tests-wp
 
 .distignore
 .gitignore
+phpunit.xml.dist
+phpunit.xml
+.phpunit.result.cache
 
 DOCKER_ENV
 Dockerfile-php-build
