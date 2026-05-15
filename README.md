@@ -19,12 +19,6 @@ Given that you have already registered a Miso account, you can set up your data 
 3. Enter your API key and click the "Save Changes" button.
 4. Go to the Miso AI > Posts menu page and click the "Sync Posts" button to sync all your posts to your Miso catalog.
 
-## Development
-
-1. Install PHP
-2. Install Composer
-3. Run `composer install` to install dependencies.
-
 ## Privacy policies
 
 See Miso's [privacy policy](https://miso.ai/privacy-policy) for more information.
