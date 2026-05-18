@@ -16,11 +16,35 @@ class DataBase {
         global $wpdb;
         $table_name = self::table_name('task');
         $tasks = $wpdb->get_results("SELECT * FROM {$table_name} ORDER BY created_at DESC LIMIT 10", ARRAY_A);
-        return array_map(function($task) {
+        $tasks = array_map(function($task) {
             $task['args'] = json_decode($task['args'], true);
             $task['data'] = json_decode($task['data'], true);
             return $task;
         }, $tasks);
+        foreach ($tasks as &$task) {
+            self::reconcile_stale($task);
+        }
+        unset($task);
+        return $tasks;
+    }
+
+    // Active rows whose modified_at hasn't advanced in this window are treated
+    // as abandoned (worker died from a fatal that bypassed all error paths).
+    const STALE_THRESHOLD_SECONDS = 300;
+
+    protected static function reconcile_stale(&$task) {
+        if (!in_array($task['status'], ['queued', 'started', 'running'], true)) {
+            return;
+        }
+        // modified_at is stored in UTC (see current_time('mysql', 1) below).
+        $threshold = gmdate('Y-m-d H:i:s', time() - self::STALE_THRESHOLD_SECONDS);
+        if ($task['modified_at'] >= $threshold) {
+            return;
+        }
+        $task['status'] = 'failed';
+        $task['data'] = is_array($task['data']) ? $task['data'] : [];
+        $task['data']['error'] = 'Task abandoned (no progress for over 5 minutes).';
+        self::update_task($task, false);
     }
 
     public static function create_task($task) {
@@ -42,15 +66,17 @@ class DataBase {
         return $task;
     }
 
-    public static function update_task($task) {
+    public static function update_task($task, $bump_modified_at = true) {
         global $wpdb;
         $table_name = self::table_name('task');
-        $current_time = current_time('mysql', 1);
+        // Schema has ON UPDATE CURRENT_TIMESTAMP, so we must explicitly write
+        // the original value to preserve it.
+        $modified_at = $bump_modified_at ? current_time('mysql', 1) : $task['modified_at'];
         $wpdb->update(
-            $table_name, 
+            $table_name,
             [
                 'status' => $task['status'],
-                'modified_at' => $current_time,
+                'modified_at' => $modified_at,
                 'data' => wp_json_encode($task['data'] ?? []),
             ],
             [

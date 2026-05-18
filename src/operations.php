@@ -36,6 +36,26 @@ class Operations {
             'post_status' => 'publish',
         ];
 
+        // Mark the task as failed on fatal errors (OOM, timeout) that bypass
+        // the try/catch below and would otherwise leave the row at 'running'.
+        $completed = false;
+        register_shutdown_function(function () use (&$task, &$completed) {
+            if ($completed) {
+                return;
+            }
+            $err = error_get_last();
+            if (!$err || !in_array($err['type'], [E_ERROR, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR, E_PARSE], true)) {
+                return;
+            }
+            try {
+                $task['status'] = 'failed';
+                $task['data']['error'] = sprintf('Fatal: %s', $err['message']);
+                DataBase::update_task($task);
+            } catch (\Throwable $e) {
+                error_log('Miso: failed to reconcile task on shutdown: ' . $e->getMessage());
+            }
+        });
+
         try {
             $miso = create_client();
 
@@ -122,11 +142,13 @@ class Operations {
             $task['data']['phase'] = 'done';
             $task['status'] = 'done';
             self::update_task($task);
+            $completed = true;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $task['status'] = 'failed';
             $task['data']['error'] = $e->getMessage();
             self::update_task($task);
+            $completed = true;
             throw $e;
         }
     }
