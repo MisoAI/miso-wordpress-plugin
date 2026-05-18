@@ -56,6 +56,10 @@ class Operations {
             }
         });
 
+        // Lift PHP's max_execution_time for this worker - large syncs can run
+        // for many minutes; AS does not preempt a single action.
+        @set_time_limit(0);
+
         try {
             $miso = create_client();
 
@@ -101,6 +105,15 @@ class Operations {
                         self::update_task($task);
                         $records = [];
                     }
+                }
+
+                // Prevent the WP runtime object cache from accumulating across
+                // pages - without this, syncing large catalogs OOMs the worker.
+                // wp_cache_flush_runtime() (WP 6.0+) only clears the in-memory
+                // cache and preserves persistent caches like Redis/Memcached.
+                unset($posts);
+                if (function_exists('wp_cache_flush_runtime')) {
+                    wp_cache_flush_runtime();
                 }
 
                 $page++;
