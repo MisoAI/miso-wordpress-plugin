@@ -2,7 +2,7 @@
 Contributors: misosimonpai
 Tags: Miso, AI, LLM
 Tested up to: 6.8
-Stable tag: 0.9.7
+Stable tag: 0.9.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,7 +35,7 @@ See Miso's [privacy policy page](https://miso.ai/privacy-policy) for more inform
 
 == Changelog ==
 
-= 0.9.7 =
+= 0.9.8 =
 * Fix: [#12](https://github.com/MisoAI/miso-wordpress-plugin/issues/12) Migrate from `save_post` to `wp_after_insert_post` so post meta and taxonomies are included in sync.
 * Fix: [#14](https://github.com/MisoAI/miso-wordpress-plugin/issues/14) Prevent sync tasks from getting stuck in the `running` state on large catalogs. Flush the WordPress runtime object cache between pages, lift PHP's execution time limit for the worker, register a shutdown-handler fallback for unrecoverable fatals (OOM, timeout), and reconcile stale `running`/`queued` rows on read.
 
