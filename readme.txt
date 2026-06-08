@@ -2,7 +2,7 @@
 Contributors: misosimonpai
 Tags: Miso, AI, LLM
 Tested up to: 6.8
-Stable tag: 0.9.8
+Stable tag: 0.9.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,10 @@ Given that you have already registered a Miso account, you can set up your data 
 See Miso's [privacy policy page](https://miso.ai/privacy-policy) for more information.
 
 == Changelog ==
+
+= 0.9.9 =
+* Fix: [#15](https://github.com/MisoAI/miso-wordpress-plugin/issues/15) Ensure the task table exists on multisite subsites and after auto-updates, not just on activation, to avoid MySQL error 1146 when reading recent tasks.
+* Fix: [#16](https://github.com/MisoAI/miso-wordpress-plugin/issues/16) Clear `$wpdb->queries` between pages during post sync so the worker no longer runs out of memory when `SAVEQUERIES` is enabled (e.g. with `WP_DEBUG`).
 
 = 0.9.8 =
 * Fix: [#12](https://github.com/MisoAI/miso-wordpress-plugin/issues/12) Migrate from `save_post` to `wp_after_insert_post` so post meta and taxonomies are included in sync.
