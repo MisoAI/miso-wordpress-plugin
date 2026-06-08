@@ -116,6 +116,18 @@ class Operations {
                     wp_cache_flush_runtime();
                 }
 
+                // When SAVEQUERIES is on (it is whenever WP_DEBUG is enabled,
+                // common on staging) $wpdb->queries records the SQL, timing,
+                // and a backtrace for every query and is never cleared. Over a
+                // full sync this grows unbounded and OOMs the worker, so reset
+                // it each page. Harmless when SAVEQUERIES is off (array stays
+                // empty); preserves the count for any code that reads it.
+                global $wpdb;
+                if (!empty($wpdb->queries)) {
+                    $wpdb->num_queries = 0;
+                    $wpdb->queries = [];
+                }
+
                 $page++;
             } while (true);
 
