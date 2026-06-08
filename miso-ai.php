@@ -37,6 +37,11 @@ require_once __DIR__ . '/src/admin/index.php';
 register_activation_hook(__FILE__, function() {
     Miso\DataBase::install();
 });
+// Activation alone misses multisite subsites created after network activation
+// and any site touched by an auto-update, so ensure the table on every request.
+add_action('init', function() {
+    Miso\DataBase::maybe_upgrade();
+});
 register_deactivation_hook(__FILE__, function() {
     Miso\DataBase::uninstall();
 });

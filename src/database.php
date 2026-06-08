@@ -4,12 +4,34 @@ namespace Miso;
 
 class DataBase {
 
+    // Bump this whenever the task table schema changes so maybe_upgrade()
+    // re-runs install() on sites that are already on an older version.
+    const DB_VERSION = '1';
+
     public static function install() {
         self::create_task_table();
+        update_option('miso_db_version', self::DB_VERSION);
     }
 
     public static function uninstall() {
         self::drop_task_table();
+        delete_option('miso_db_version');
+    }
+
+    // register_activation_hook only fires on the site(s) where the plugin is
+    // activated. On multisite it never runs for subsites created later, and it
+    // never runs on auto-update for any site. Those sites would otherwise call
+    // recent_tasks() against a missing table and hit MySQL error 1146.
+    //
+    // This runs on every request, gated by a per-site option so the hot path is
+    // a single (autoloaded, cached) option read. Both the option and
+    // table_name()'s $wpdb->prefix are per-blog, so each subsite creates and
+    // tracks its own table independently.
+    public static function maybe_upgrade() {
+        if (get_option('miso_db_version') === self::DB_VERSION) {
+            return;
+        }
+        self::install();
     }
 
     public static function recent_tasks() {
