@@ -1,8 +1,8 @@
 === Miso AI ===
 Contributors: misosimonpai
 Tags: Miso, AI, LLM
-Tested up to: 6.8
-Stable tag: 0.9.9
+Tested up to: 7.1
+Stable tag: 0.9.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -34,6 +34,9 @@ Given that you have already registered a Miso account, you can set up your data 
 See Miso's [privacy policy page](https://miso.ai/privacy-policy) for more information.
 
 == Changelog ==
+
+= 0.9.10 =
+* Tested with WordPress 7.1
 
 = 0.9.9 =
 * Fix: [#15](https://github.com/MisoAI/miso-wordpress-plugin/issues/15) Ensure the task table exists on multisite subsites and after auto-updates, not just on activation, to avoid MySQL error 1146 when reading recent tasks.
